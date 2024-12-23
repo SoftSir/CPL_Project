@@ -31,7 +31,7 @@ typedef struct TubeStruct {		// 单个管道的属性
 	int xRight;					// 右边缘坐标
 	int gap[2];					// 管道间隙所在的y坐标，gap[0]为上边缘，gap[1]为下边缘
 	int gapHeight;				// 管道间隙的高度
-	double nothing;
+	int isScored;
 } Tube;
 
 typedef struct TubesNodeStruct {// 单个管道的链表节点
@@ -60,6 +60,7 @@ int baseMoveStep = 10 * SPEED_FACTOR;	// 地面每秒移动距离
 int createInterval = 2;					// 创建新管道的时间间隔
 double refreshTime = 0.03;				// 刷新界面的时间（即重新绘制）
 double gravity = 30;					// 重力加速度
+int score = 0;
 
 // 所有管道的链表
 Tubes tubes = {
@@ -111,20 +112,8 @@ void gameOverAnimation();
 void WithTimeTest();
 
 // help function
-void printTubesAndBird() {
-	TubesNode* node = tubes.head;
-	int i = 0;
-	while (node != NULL) {
-		printf("Bird.x = %d		Bird.y = %d\n", bird.x, bird.y);
-		printf("Node %d:\n", i);
-		printf("\txleft = %d\n\txright = %d\n\tupper = %d\n\tlower = %d\n",\
-			node->tube->xLeft, node->tube->xRight, node->tube->gap[0], node->tube->gap[1]);
-		node = node->next;
-		i++;
-	}
-	printf("\n\n\n");
-}
-
+void printTubesAndBird();
+void printScore();
 
 void main() {
 	loadTestImages();
@@ -157,7 +146,8 @@ void WithTimeTest() {
 		if (isClick()) {
 			wing();
 		}
-		printTubesAndBird();
+		printScore();
+		//printTubesAndBird();
 		Sleep(10);
 	}
 	gameOverAnimation();
@@ -208,13 +198,19 @@ int isHit() {
 
 	int left = node->tube->xLeft;
 	int right = node->tube->xRight;
-	if (left > bird.x || right < bird.x)
+	if (left > bird.x)
 		return 0;
+	else if (right < bird.x) {
+		if (!node->tube->isScored) {
+			score++;
+			node->tube->isScored = 1;
+		}
+		return 0;
+	}
 	
 	int upper = node->tube->gap[0];
 	int lower = node->tube->gap[1];
 	if (bird.y > upper && bird.y < lower) {
-		printf("***************Successful!*************");
 		return 0;
 	}
 	else
@@ -348,6 +344,7 @@ void createConstantTube() {
 	tube->width = tubeWidth;
 	tube->xRight = tube->xLeft + tube->width;
 	tube->gapHeight = tubeGap;
+	tube->isScored = 0;
 	getRandomGap(tube);
 
 	node->tube = tube;
@@ -395,4 +392,21 @@ void loadTestImages() {
 	loadimage(&BirdImages[0], _T("images\\bluebird-downflap.png"));
 	loadimage(&BirdImages[1], _T("images\\bluebird-midflap.png"));
 	loadimage(&BirdImages[2], _T("images\\bluebird-upflap.png"));
+}
+
+void printTubesAndBird() {
+	TubesNode* node = tubes.head;
+	int i = 0;
+	while (node != NULL) {
+		printf("Bird.x = %d		Bird.y = %d\n", bird.x, bird.y);
+		printf("Node %d:\n", i);
+		printf("\txleft = %d\n\txright = %d\n\tupper = %d\n\tlower = %d\n", \
+			node->tube->xLeft, node->tube->xRight, node->tube->gap[0], node->tube->gap[1]);
+		node = node->next;
+		i++;
+	}
+	printf("\n\n\n");
+}
+void printScore() {
+	printf("Score: %d\n", score);
 }
