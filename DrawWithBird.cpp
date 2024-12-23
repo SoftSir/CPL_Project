@@ -12,6 +12,8 @@
 #define PI 3.14159265359
 #define SPEED_FACTOR 10
 #define BIRD_X 80
+#define DESCENT_SPEED 50
+#define DESCENT_A 200
 
 // 鸟的属性
 typedef struct BirdStruct {
@@ -86,8 +88,10 @@ void moveBird(double interval); // Improve: when up and down
 
 /*
 *	绘图函数
+*	Attention: drawBird can accept another arg to choose different bird.
 */	
 void draw();			// 绘制所有组件
+void drawWithoutBase();
 void drawTubes(Tube*);	// 绘制指定管道
 void drawBackground();	// 绘制背景
 void drawBase();		// 绘制地面
@@ -101,6 +105,7 @@ void wing();
 int isClick();
 int isHit(); //*********
 int isDie(); //*********
+void gameOverAnimation();
 
 // Test 
 void WithTimeTest();
@@ -155,11 +160,46 @@ void WithTimeTest() {
 		printTubesAndBird();
 		Sleep(10);
 	}
-	draw();
+	gameOverAnimation();
 	printf("Game Over!\n");
 	_getch();
 }
 
+void gameOverAnimation() {
+	Sleep(1000);
+	clock_t startTime = clock();
+	clock_t curTime;
+	clock_t initTime = startTime;
+
+	bird.v = 100;
+	while (bird.v > 0) {
+		draw();
+		curTime = clock();
+		while ((double)(curTime - startTime) / CLOCKS_PER_SEC < refreshTime) {
+			curTime = clock();
+		}
+		double t = (double)(curTime - startTime) / CLOCKS_PER_SEC;
+		bird.y -= bird.v * t;
+		if (bird.y < 0) {
+			bird.y = 0;
+		}
+		bird.v -= DESCENT_A * t;
+		startTime = curTime;
+	}
+
+	startTime = clock();
+	initTime = startTime;
+	while (bird.y < GRAPH_HEIGHT) {
+		draw();
+		curTime = clock();
+		while ((double)(curTime - startTime) / CLOCKS_PER_SEC < refreshTime) {
+			curTime = clock();
+		}
+		double t = (double)(curTime - initTime) / CLOCKS_PER_SEC;
+		bird.y += DESCENT_SPEED * t;
+		startTime = curTime;
+	}
+}
 
 int isHit() {
 	TubesNode* node = tubes.head;
@@ -173,7 +213,7 @@ int isHit() {
 	
 	int upper = node->tube->gap[0];
 	int lower = node->tube->gap[1];
-	if (bird.y < upper && bird.y > lower) {
+	if (bird.y > upper && bird.y < lower) {
 		printf("***************Successful!*************");
 		return 0;
 	}
@@ -200,7 +240,7 @@ int isClick() {
 
 void wing() {
 	if (bird.v <= 0) {
-		bird.v = 20;
+		bird.v = 10;
 	}
 	else {
 		bird.v += 10;
@@ -224,6 +264,12 @@ void drawBase() {
 void draw() {
 	drawBackground();
 	drawBase();
+	drawAllTubes();
+	drawBird(1);
+}
+
+void drawWithoutBase() {
+	drawBackground();
 	drawAllTubes();
 	drawBird(1);
 }
