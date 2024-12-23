@@ -1,0 +1,9 @@
+﻿  DrawWithBird.cpp
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(118,13): warning C4326: “main”的返回类型应为“int”而非“void”
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(172,20): warning C4244: “-=”: 从“double”转换到“int”，可能丢失数据
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(189,27): warning C4244: “+=”: 从“double”转换到“int”，可能丢失数据
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(280,30): warning C4244: “-=”: 从“double”转换到“int”，可能丢失数据
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(305,37): warning C4244: “-=”: 从“double”转换到“int”，可能丢失数据
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(306,38): warning C4244: “-=”: 从“double”转换到“int”，可能丢失数据
+D:\0programming\CodeVisualStudio\testFB\DrawWithBird.cpp(380,30): warning C4244: “-=”: 从“double”转换到“int”，可能丢失数据
+  testFB.vcxproj -> D:\0programming\CodeVisualStudio\testFB\x64\Debug\testFB.exe
